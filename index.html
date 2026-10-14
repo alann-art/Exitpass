@@ -1,0 +1,945 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secondary 2 Art: Sketching Check for Understanding</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        ac: {
+                            bg: '#e5f0d8',
+                            card: '#fffdf6',
+                            green: '#78c850',
+                            darkgreen: '#489b27',
+                            wood: '#c89d68',
+                            darkwood: '#8b5a2b',
+                            yellow: '#f8d030',
+                            cream: '#fbf8eb',
+                            brown: '#5c4033',
+                            leaf: '#388e3c',
+                            blue: '#64b5f6',
+                            orange: '#ffa726'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Fredoka', 'Nunito', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #e5f0d8;
+            background-image: 
+                radial-gradient(#78c850 15%, transparent 16%),
+                radial-gradient(#a2db81 15%, transparent 16%);
+            background-size: 60px 60px;
+            background-position: 0 0, 30px 30px;
+            color: #4a3b32;
+            font-family: 'Fredoka', 'Nunito', sans-serif;
+            min-height: 100vh;
+            user-select: none;
+        }
+
+        .ac-box {
+            background-color: #fffdf6;
+            border: 4px solid #8b5a2b;
+            border-radius: 24px;
+            box-shadow: 0 8px 0 #5c4033, 0 12px 20px rgba(0,0,0,0.1);
+        }
+
+        .ac-card {
+            background: #fbf8eb;
+            border: 3px solid #c89d68;
+            border-radius: 18px;
+            box-shadow: 0 4px 0 #8b5a2b;
+            transition: all 0.15s ease;
+        }
+
+        .ac-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 0 #8b5a2b;
+        }
+
+        .ac-card.correct-hint {
+            background-color: #e8f5e9 !important;
+            border-color: #489b27 !important;
+            box-shadow: 0 4px 0 #2e6617 !important;
+        }
+
+        .ac-card.wrong-hint {
+            background-color: #ffebee !important;
+            border-color: #e53935 !important;
+            box-shadow: 0 4px 0 #b71c1c !important;
+        }
+
+        .ac-btn {
+            background-color: #78c850;
+            color: white;
+            border: 3px solid #489b27;
+            border-radius: 999px;
+            box-shadow: 0 5px 0 #2e6617;
+            text-shadow: 1px 1px 0 #2e6617;
+            transition: all 0.15s ease;
+            cursor: pointer;
+        }
+
+        .ac-btn:hover {
+            background-color: #8be061;
+            transform: translateY(-2px);
+            box-shadow: 0 7px 0 #2e6617;
+        }
+
+        .ac-btn:active {
+            transform: translateY(3px);
+            box-shadow: 0 2px 0 #2e6617;
+        }
+
+        .ac-btn-yellow {
+            background-color: #f8d030;
+            color: #5c4033;
+            border: 3px solid #d4a017;
+            box-shadow: 0 5px 0 #997300;
+            text-shadow: none;
+        }
+
+        .ac-btn-yellow:hover {
+            background-color: #ffe054;
+            box-shadow: 0 7px 0 #997300;
+        }
+
+        .ac-input {
+            background: #ffffff;
+            border: 3px solid #c89d68;
+            border-radius: 16px;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.06);
+            outline: none;
+        }
+
+        .ac-input:focus {
+            border-color: #78c850;
+        }
+
+        .ac-checkbox {
+            appearance: none;
+            width: 28px;
+            height: 28px;
+            border: 3px solid #8b5a2b;
+            border-radius: 8px;
+            background: #fff;
+            cursor: pointer;
+            position: relative;
+            flex-shrink: 0;
+            transition: all 0.2s ease;
+        }
+
+        .ac-checkbox:checked {
+            background-color: #78c850;
+            border-color: #489b27;
+        }
+
+        .ac-checkbox:checked::after {
+            content: '✓';
+            position: absolute;
+            color: white;
+            font-size: 20px;
+            font-weight: bold;
+            top: -3px;
+            left: 4px;
+        }
+
+        /* Animations */
+        @keyframes blink-star {
+            0%, 100% { opacity: 1; transform: scale(1) rotate(0deg); }
+            50% { opacity: 0.2; transform: scale(1.4) rotate(15deg); }
+        }
+
+        .animate-blink-star {
+            animation: blink-star 0.8s infinite alternate;
+        }
+
+        @keyframes dance {
+            0%, 100% { transform: translateY(0) rotate(-6deg); }
+            25% { transform: translateY(-12px) rotate(0deg); }
+            50% { transform: translateY(0) rotate(6deg); }
+            75% { transform: translateY(-12px) rotate(0deg); }
+        }
+
+        .animate-dance {
+            animation: dance 0.8s infinite ease-in-out;
+        }
+
+        @keyframes bounce-quest {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-14px) scale(1.15); }
+        }
+
+        .animate-bounce-quest {
+            animation: bounce-quest 1s infinite ease-in-out;
+        }
+
+        .modal-bg {
+            background-color: rgba(92, 64, 51, 0.4);
+            backdrop-filter: blur(3px);
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center p-3 sm:p-6 relative">
+
+    <!-- Top Sound Bar (Mute / Unmute & Hint Indicator) -->
+    <div class="fixed top-3 right-3 z-50 flex items-center gap-2">
+        <div id="hint-mode-badge" class="hidden bg-amber-400 border-2 border-amber-700 text-amber-950 px-3 py-1 rounded-full text-xs sm:text-sm font-bold shadow-md animate-pulse">
+            💡 HINT MODE ACTIVE
+        </div>
+        <button id="btn-sound" onclick="toggleBGM()" class="bg-ac-card border-3 border-ac-wood px-4 py-2 rounded-full font-bold text-sm text-ac-brown shadow-md hover:bg-amber-100 flex items-center gap-2 transition">
+            <span id="sound-icon">🎵</span> <span id="sound-text">BGM On</span>
+        </button>
+    </div>
+
+    <!-- Main Container -->
+    <div id="app-container" class="w-full max-w-3xl mx-auto my-auto">
+
+        <!-- Title Banner -->
+        <div class="text-center mb-4">
+            <div class="inline-flex items-center gap-2 bg-ac-card border-4 border-ac-wood px-6 py-2 rounded-full shadow-md mb-2">
+                <svg class="w-8 h-8 fill-ac-green" viewBox="0 0 24 24">
+                    <path d="M17,8C15.5,8 14.15,8.42 13,9.14C11.85,8.42 10.5,8 9,8C5.13,8 2,11.13 2,15C2,18.87 5.13,22 9,22C10.5,22 11.85,21.58 13,20.86C14.15,21.58 15.5,22 17,22C20.87,22 24,18.87 24,15C24,11.13 20.87,8 17,8M9,20C6.24,20 4,17.76 4,15C4,12.24 6.24,10 9,10 C10.13,10 11.17,10.38 12,11.03C11.38,12.17 11,13.54 11,15C11,16.46 11.38,17.83 12,18.97C11.17,19.62 10.13,20 9,20M17,20C15.87,20 14.83,19.62 14,18.97C14.62,17.83 15,16.46 15,15C15,13.54 14.62,12.17 14,11.03 C14.83,10.38 15.87,10 17,10C19.76,10 22,12.24 22,15C22,17.76 19.76,20 17,20Z"/>
+                </svg>
+                <h1 class="text-xl sm:text-2xl font-bold text-ac-brown tracking-wide">Secondary 2 Art Island Quiz</h1>
+            </div>
+            <p class="text-xs sm:text-sm font-semibold text-emerald-800">Topic: Sketching, Shapes, Contour & Cross-Contour</p>
+        </div>
+
+        <!-- SCREEN 1: REGISTRATION -->
+        <div id="screen-register" class="ac-box p-6 sm:p-10 text-center">
+            <div class="mb-6">
+                <div class="w-20 h-20 bg-emerald-100 border-4 border-ac-wood rounded-full mx-auto flex items-center justify-center text-3xl shadow-inner mb-3">
+                    🎨
+                </div>
+                <h2 class="text-2xl font-bold text-ac-brown">Welcome, Young Artist!</h2>
+                <p class="text-gray-600 mt-1 text-sm sm:text-base">Please enter your details to begin your sketching assessment.</p>
+            </div>
+
+            <form id="form-register" onsubmit="event.preventDefault(); startQuiz();" class="max-w-md mx-auto space-y-4">
+                <div class="text-left">
+                    <label class="block text-sm font-bold text-ac-brown mb-1 ml-1">Student Name:</label>
+                    <input type="text" id="input-name" required placeholder="e.g., Alex Tan" class="ac-input w-full p-3 text-lg font-semibold text-gray-800">
+                </div>
+
+                <div class="text-left">
+                    <label class="block text-sm font-bold text-ac-brown mb-1 ml-1">Register Number:</label>
+                    <input type="number" id="input-reg" required min="1" max="50" placeholder="e.g., 14" class="ac-input w-full p-3 text-lg font-semibold text-gray-800">
+                </div>
+
+                <div class="pt-4">
+                    <button type="submit" onclick="playClickSound()" class="ac-btn w-full py-4 text-xl font-bold tracking-wider uppercase">
+                        Start Quiz 🚀
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- SCREEN 2: QUIZ INTERFACE -->
+        <div id="screen-quiz" class="ac-box p-4 sm:p-8 hidden">
+            
+            <!-- ANIMAL PROGRESS TRACK (Point A to Point B) -->
+            <div class="bg-emerald-100 border-3 border-ac-wood rounded-2xl p-3 mb-6 relative overflow-hidden shadow-inner">
+                <div class="flex justify-between text-xs font-bold text-ac-brown mb-1">
+                    <span>Point A (0 Marks) 🚩</span>
+                    <span id="current-score-label">Accumulated Score: 0 / 10</span>
+                    <span>Point B (10 Marks) 🏡</span>
+                </div>
+                <!-- Track Line -->
+                <div class="h-4 bg-emerald-300 border-2 border-ac-darkgreen rounded-full relative overflow-hidden">
+                    <div id="track-progress-bar" class="h-full bg-ac-green transition-all duration-500 ease-out w-0"></div>
+                </div>
+                <!-- Track Path with Character & Target House -->
+                <div class="relative h-12 mt-1">
+                    <!-- Point B House -->
+                    <div class="absolute right-0 bottom-0 text-3xl transform translate-x-1/4">
+                        🏡
+                    </div>
+                    <!-- Moving Animal Character -->
+                    <div id="animal-character" class="absolute bottom-0 text-3xl transition-all duration-500 ease-out" style="left: 0%;">
+                        🦊
+                    </div>
+                </div>
+            </div>
+
+            <!-- Header Info -->
+            <div class="flex justify-between items-center mb-4 pb-3 border-b-2 border-dashed border-ac-wood">
+                <div class="flex items-center gap-2">
+                    <span class="bg-ac-yellow text-ac-brown font-bold px-3 py-1 rounded-full text-xs sm:text-sm border-2 border-amber-600">
+                        👤 <span id="display-student-info">Student</span>
+                    </span>
+                </div>
+                <div class="text-xs sm:text-sm font-bold text-ac-brown bg-emerald-100 px-3 py-1 rounded-full border-2 border-ac-green">
+                    Question <span id="q-curr">1</span> of <span id="q-total">5</span>
+                </div>
+            </div>
+
+            <!-- Question & Choices -->
+            <div id="question-box" class="space-y-4">
+                <!-- Dynamically Inserted -->
+            </div>
+
+            <!-- Navigation Buttons -->
+            <div class="mt-6 pt-4 border-t-2 border-dashed border-ac-wood flex justify-between items-center">
+                <button id="btn-prev" onclick="navigateQuestion(-1)" class="ac-btn-yellow px-5 py-2 font-bold rounded-full hidden">
+                    ← Back
+                </button>
+                <div class="ml-auto">
+                    <button id="btn-next" onclick="handleNextClick()" class="ac-btn px-6 py-3 font-bold text-lg">
+                        Next Question →
+                    </button>
+                    <button id="btn-submit" onclick="confirmSubmit()" class="ac-btn px-6 py-3 font-bold text-lg hidden bg-amber-500 hover:bg-amber-400 border-amber-700">
+                        Finish & Submit 🏆
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- SCREEN 3: RESULTS -->
+        <div id="screen-result" class="ac-box p-6 sm:p-10 text-center hidden">
+            
+            <!-- Result Speech Bubble -->
+            <div id="result-speech" class="bg-white border-4 border-ac-wood rounded-2xl p-4 sm:p-6 mb-6 relative shadow-md">
+                <div id="result-badge-icon" class="text-6xl mb-2">🌟</div>
+                <h2 id="result-headline" class="text-2xl sm:text-3xl font-extrabold text-ac-brown">
+                    <!-- Dynamic Headline -->
+                </h2>
+                <p id="result-subtext" class="text-base sm:text-lg font-semibold text-gray-700 mt-2">
+                    <!-- Dynamic Details -->
+                </p>
+            </div>
+
+            <!-- Score Display & Animal Destination -->
+            <div class="bg-emerald-50 border-4 border-ac-green rounded-2xl p-6 mb-6 max-w-md mx-auto shadow-inner relative overflow-hidden">
+                <div class="text-xs uppercase tracking-widest font-bold text-emerald-800 mb-1">Official Assessment Result</div>
+                <div id="result-student-name" class="text-xl font-bold text-ac-brown mb-2">Student Name</div>
+                <div class="text-5xl font-black text-ac-darkgreen my-3">
+                    <span id="result-score">0</span> / 10 Marks
+                </div>
+                <div id="result-percentage" class="text-sm font-bold text-emerald-700 mb-4">100% Score</div>
+
+                <!-- Point B House Celebration Scene -->
+                <div class="bg-emerald-200 border-2 border-ac-darkgreen rounded-xl p-3 flex justify-center items-center gap-4">
+                    <div id="final-animal-scene" class="text-4xl">
+                        🦊 🏡
+                    </div>
+                </div>
+            </div>
+
+            <!-- MANDATORY INSTRUCTION TEXT -->
+            <div class="bg-amber-100 border-3 border-amber-400 rounded-xl p-4 mb-6 text-amber-950 font-bold text-sm sm:text-base flex items-center justify-center gap-2 shadow">
+                <span class="text-2xl">📸</span>
+                <span>"Screenshot the result page and post at class Padlet."</span>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex flex-wrap gap-4 justify-center">
+                <button onclick="retryQuiz()" class="ac-btn-yellow px-6 py-3 font-bold text-base sm:text-lg">
+                    🔄 Retry Assessment
+                </button>
+                <button onclick="reviewAnswers()" class="ac-btn px-6 py-3 font-bold text-base sm:text-lg">
+                    📋 Review Answers
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- TRANSITION MODAL CUE (Between Questions) -->
+    <div id="transition-modal" class="fixed inset-0 modal-bg z-50 flex items-center justify-center p-4 hidden">
+        <div id="transition-card" class="ac-box p-6 sm:p-8 max-w-sm w-full text-center transform transition-all scale-95 opacity-0">
+            <div id="transition-icon" class="text-6xl mb-3 animate-bounce">✨</div>
+            <h3 id="transition-title" class="text-2xl font-extrabold text-ac-brown mb-2">Spot On!</h3>
+            <p id="transition-msg" class="text-base font-semibold text-gray-700 mb-6">Clean lines and accurate details!</p>
+            <button onclick="closeTransitionModal()" class="ac-btn w-full py-3 font-bold text-lg">
+                Continue →
+            </button>
+        </div>
+    </div>
+
+    <script>
+        /* WEB AUDIO API SYNTHESIZER (No external MP3 files needed) */
+        let audioCtx = null;
+        let bgmOsc1 = null;
+        let bgmOsc2 = null;
+        let bgmGain = null;
+        let isMuted = false;
+        let bgmTimer = null;
+
+        function initAudio() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+        }
+
+        // Toggle Audio BGM
+        function toggleBGM() {
+            initAudio();
+            isMuted = !isMuted;
+            document.getElementById('sound-icon').textContent = isMuted ? "🔇" : "🎵";
+            document.getElementById('sound-text').textContent = isMuted ? "Muted" : "BGM On";
+
+            if (isMuted) {
+                stopBGM();
+            } else {
+                startBGM();
+            }
+        }
+
+        // Animal Crossing Style Synthetic BGM Generator
+        function startBGM() {
+            if (isMuted || bgmTimer) return;
+            initAudio();
+
+            const notes = [261.63, 329.63, 392.00, 523.25, 440.00, 349.23, 392.00, 329.63]; // C-E-G-C5-A-F-G-E
+            let step = 0;
+
+            bgmTimer = setInterval(() => {
+                if (isMuted || !audioCtx) return;
+                const freq = notes[step % notes.length];
+                step++;
+
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                
+                osc.type = 'triangle'; // Soft acoustic/marimba feel
+                osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+
+                gain.gain.setValueAtTime(0.04, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.35);
+
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+
+                osc.start(audioCtx.currentTime);
+                osc.stop(audioCtx.currentTime + 0.4);
+            }, 400);
+        }
+
+        function stopBGM() {
+            if (bgmTimer) {
+                clearInterval(bgmTimer);
+                bgmTimer = null;
+            }
+        }
+
+        // UI Sound Effects
+        function playClickSound() {
+            initAudio();
+            if (isMuted || !audioCtx) return;
+
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(400, audioCtx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(600, audioCtx.currentTime + 0.08);
+
+            gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.08);
+
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.08);
+        }
+
+        function playHintSound(isCorrect) {
+            initAudio();
+            if (isMuted || !audioCtx) return;
+
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+
+            if (isCorrect) {
+                // Happy high ding
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(587.33, audioCtx.currentTime); // D5
+                osc.frequency.setValueAtTime(880.00, audioCtx.currentTime + 0.1); // A5
+                gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.25);
+            } else {
+                // Low soft boop
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(220, audioCtx.currentTime); // A3
+                osc.frequency.setValueAtTime(164.81, audioCtx.currentTime + 0.1); // E3
+                gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.25);
+            }
+
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.25);
+        }
+
+        function playSoundResult(score) {
+            initAudio();
+            if (isMuted || !audioCtx) return;
+
+            const now = audioCtx.currentTime;
+
+            if (score === 10) {
+                // Exaggerated Synthetic Chime
+                const arpeggio = [523.25, 659.25, 783.99, 1046.50, 1318.51];
+                arpeggio.forEach((f, i) => {
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(f, now + i * 0.1);
+                    gain.gain.setValueAtTime(0.25, now + i * 0.1);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.1 + 0.4);
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    osc.start(now + i * 0.1);
+                    osc.stop(now + i * 0.1 + 0.45);
+                });
+            } else if (score === 9) {
+                // Synthetic Chime
+                [523.25, 659.25, 783.99].forEach((f, i) => {
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(f, now + i * 0.12);
+                    gain.gain.setValueAtTime(0.2, now + i * 0.12);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.12 + 0.35);
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    osc.start(now + i * 0.12);
+                    osc.stop(now + i * 0.12 + 0.4);
+                });
+            } else if (score >= 1) {
+                // Curious Audio Prompt
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(329.63, now);
+                osc.frequency.exponentialRampToValueAtTime(466.16, now + 0.25);
+                gain.gain.setValueAtTime(0.2, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.5);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start(now);
+                osc.stop(now + 0.5);
+            } else {
+                // Gentle Mistake Sound
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(200, now);
+                osc.frequency.linearRampToValueAtTime(140, now + 0.3);
+                gain.gain.setValueAtTime(0.2, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.35);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start(now);
+                osc.stop(now + 0.35);
+            }
+        }
+    </script>
+
+    <script>
+        // Quiz Data Structure
+        const quizData = [
+            {
+                id: 1,
+                question: "Q1) Why do I need to draw lightly when sketching? (1 mark)",
+                marks: 1,
+                multi: false,
+                options: [
+                    { text: "To make the paper darker quickly.", correct: false },
+                    { text: "It allows easy erasing and modification of basic construction shapes.", correct: true }
+                ]
+            },
+            {
+                id: 2,
+                question: "Q2) Why is visual communication useful? (You may choose more than one answer) (3 marks)",
+                marks: 3,
+                multi: true,
+                options: [
+                    { text: "It speaks a thousand words", correct: true },
+                    { text: "To make it more complicated", correct: false },
+                    { text: "To communicate complex information", correct: true },
+                    { text: "To communicate beyond language barrier", correct: true }
+                ]
+            },
+            {
+                id: 3,
+                question: "Q3) What is contour drawing? (1 mark)",
+                marks: 1,
+                multi: false,
+                options: [
+                    { text: "An art technique to show 3D form of the subject.", correct: false },
+                    { text: "An art technique that focus on the outline of the subject.", correct: true },
+                    { text: "An art that involves shading and tonal value.", correct: false }
+                ]
+            },
+            {
+                id: 4,
+                question: "Q4) How can I show the form of the subject when drawing? (1 mark)",
+                marks: 1,
+                multi: false,
+                options: [
+                    { text: "By using cross-contour, which involves using of curves lines", correct: true },
+                    { text: "By making the form to look like forms", correct: false }
+                ]
+            },
+            {
+                id: 5,
+                question: "Q5) How to get better at drawing? (You may choose more than one answer) (4 marks)",
+                marks: 4,
+                multi: true,
+                options: [
+                    { text: "Practice.", correct: true },
+                    { text: "Practice.", correct: true },
+                    { text: "Practice.", correct: true },
+                    { text: "Practice.", correct: true }
+                ]
+            }
+        ];
+
+        // App State
+        let studentName = "";
+        let registerNum = "";
+        let currentQuestionIndex = 0;
+        let studentAnswers = {}; 
+        let attemptCount = 0;
+        let hintModeActive = false;
+
+        function startQuiz() {
+            studentName = document.getElementById('input-name').value.trim();
+            registerNum = document.getElementById('input-reg').value.trim();
+
+            if (!studentName || !registerNum) return;
+
+            document.getElementById('display-student-info').textContent = `${studentName} (#${registerNum})`;
+            document.getElementById('screen-register').classList.add('hidden');
+            document.getElementById('screen-quiz').classList.remove('hidden');
+
+            startBGM();
+            currentQuestionIndex = 0;
+            renderQuestion();
+            updateAnimalTrack();
+        }
+
+        // Calculate Score for a Specific Question
+        function getQuestionScore(qIndex) {
+            const q = quizData[qIndex];
+            const userSel = studentAnswers[q.id] || [];
+            let score = 0;
+
+            if (q.id === 1 || q.id === 3 || q.id === 4) {
+                if (userSel.length === 1 && q.options[userSel[0]].correct) {
+                    score = 1;
+                }
+            } else if (q.id === 2) {
+                userSel.forEach(idx => {
+                    if (q.options[idx].correct) score += 1;
+                });
+            } else if (q.id === 5) {
+                userSel.forEach(idx => {
+                    if (q.options[idx].correct) score += 1;
+                });
+            }
+            return score;
+        }
+
+        // Calculate Total Score
+        function getTotalScore() {
+            let total = 0;
+            for (let i = 0; i < quizData.length; i++) {
+                total += getQuestionScore(i);
+            }
+            return total;
+        }
+
+        // Render Current Question
+        function renderQuestion() {
+            const q = quizData[currentQuestionIndex];
+            document.getElementById('q-curr').textContent = currentQuestionIndex + 1;
+            document.getElementById('q-total').textContent = quizData.length;
+
+            const box = document.getElementById('question-box');
+            box.innerHTML = '';
+
+            const qTitle = document.createElement('h3');
+            qTitle.className = "text-xl sm:text-2xl font-bold text-ac-brown leading-snug";
+            qTitle.textContent = q.question;
+            box.appendChild(qTitle);
+
+            const qSub = document.createElement('p');
+            qSub.className = "text-xs sm:text-sm text-emerald-800 font-semibold mb-2";
+            qSub.textContent = q.multi ? "✨ Select all options that apply:" : "✨ Select one correct answer:";
+            box.appendChild(qSub);
+
+            const optsContainer = document.createElement('div');
+            optsContainer.className = "space-y-3";
+
+            const currentSelected = studentAnswers[q.id] || [];
+
+            q.options.forEach((opt, idx) => {
+                const isSelected = currentSelected.includes(idx);
+                const optCard = document.createElement('label');
+                
+                let extraClasses = '';
+                if (hintModeActive && isSelected) {
+                    if (opt.correct) {
+                        extraClasses = 'correct-hint';
+                    } else {
+                        extraClasses = 'wrong-hint';
+                    }
+                } else if (isSelected) {
+                    extraClasses = 'bg-emerald-100 border-ac-green';
+                }
+
+                optCard.className = `ac-card p-3 sm:p-4 flex items-start gap-3 cursor-pointer select-none ${extraClasses}`;
+
+                const input = document.createElement('input');
+                input.type = q.multi ? "checkbox" : "radio";
+                input.name = `q_${q.id}`;
+                input.className = "ac-checkbox mt-0.5";
+                input.checked = isSelected;
+
+                input.addEventListener('change', () => {
+                    handleSelection(q.id, idx, q.multi, opt.correct);
+                });
+
+                const labelText = document.createElement('span');
+                labelText.className = "text-sm sm:text-base font-semibold text-ac-brown leading-relaxed flex-1";
+                labelText.textContent = opt.text;
+
+                if (hintModeActive && isSelected) {
+                    const hintTag = document.createElement('span');
+                    hintTag.className = "text-lg font-bold ml-auto";
+                    hintTag.textContent = opt.correct ? "✅" : "❌";
+                    optCard.appendChild(hintTag);
+                }
+
+                optCard.appendChild(input);
+                optCard.appendChild(labelText);
+                optsContainer.appendChild(optCard);
+            });
+
+            box.appendChild(optsContainer);
+
+            // Nav buttons
+            document.getElementById('btn-prev').classList.toggle('hidden', currentQuestionIndex === 0);
+            if (currentQuestionIndex === quizData.length - 1) {
+                document.getElementById('btn-next').classList.add('hidden');
+                document.getElementById('btn-submit').classList.remove('hidden');
+            } else {
+                document.getElementById('btn-next').classList.remove('hidden');
+                document.getElementById('btn-submit').classList.add('hidden');
+            }
+
+            updateAnimalTrack();
+        }
+
+        function handleSelection(qId, optionIdx, isMulti, isCorrect) {
+            if (!studentAnswers[qId]) {
+                studentAnswers[qId] = [];
+            }
+
+            let wasSelected = false;
+            if (isMulti) {
+                const pos = studentAnswers[qId].indexOf(optionIdx);
+                if (pos > -1) {
+                    studentAnswers[qId].splice(pos, 1);
+                    wasSelected = false;
+                } else {
+                    studentAnswers[qId].push(optionIdx);
+                    wasSelected = true;
+                }
+            } else {
+                studentAnswers[qId] = [optionIdx];
+                wasSelected = true;
+            }
+
+            if (hintModeActive) {
+                if (wasSelected) {
+                    playHintSound(isCorrect);
+                } else {
+                    playClickSound();
+                }
+            } else {
+                playClickSound();
+            }
+
+            renderQuestion();
+        }
+
+        function updateAnimalTrack() {
+            const score = getTotalScore();
+            document.getElementById('current-score-label').textContent = `Accumulated Score: ${score} / 10`;
+            
+            const percentage = (score / 10) * 100;
+            document.getElementById('track-progress-bar').style.width = `${percentage}%`;
+            
+            // Adjust animal position along track (0% to 88% to keep inside container)
+            const animalLeft = Math.min(88, (score / 10) * 88);
+            const animalChar = document.getElementById('animal-character');
+            animalChar.style.left = `${animalLeft}%`;
+
+            if (score === 10) {
+                animalChar.className = "absolute bottom-0 text-3xl transition-all duration-500 ease-out animate-dance";
+            } else {
+                animalChar.className = "absolute bottom-0 text-3xl transition-all duration-500 ease-out";
+            }
+        }
+
+        // Question Transition Cue Modal
+        function handleNextClick() {
+            playClickSound();
+            const currentScore = getQuestionScore(currentQuestionIndex);
+            const maxQuestionMarks = quizData[currentQuestionIndex].marks;
+
+            const modal = document.getElementById('transition-modal');
+            const card = document.getElementById('transition-card');
+            const icon = document.getElementById('transition-icon');
+            const title = document.getElementById('transition-title');
+            const msg = document.getElementById('transition-msg');
+
+            if (currentScore === maxQuestionMarks) {
+                icon.textContent = "✨";
+                title.textContent = "Spot On! Clean Lines! ✨";
+                title.className = "text-2xl font-extrabold text-ac-darkgreen mb-2";
+                msg.textContent = `You earned full marks (${currentScore}/${maxQuestionMarks}) on this question!`;
+            } else {
+                icon.textContent = "💭";
+                title.textContent = "Check your work! Almost there! 💭";
+                title.className = "text-2xl font-extrabold text-amber-700 mb-2";
+                msg.textContent = `You earned ${currentScore}/${maxQuestionMarks} marks for this section. Keep going!`;
+            }
+
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                card.classList.remove('scale-95', 'opacity-0');
+                card.classList.add('scale-100', 'opacity-100');
+            }, 10);
+        }
+
+        function closeTransitionModal() {
+            playClickSound();
+            const modal = document.getElementById('transition-modal');
+            const card = document.getElementById('transition-card');
+
+            card.classList.remove('scale-100', 'opacity-100');
+            card.classList.add('scale-95', 'opacity-0');
+
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                navigateQuestion(1);
+            }, 150);
+        }
+
+        function navigateQuestion(direction) {
+            currentQuestionIndex += direction;
+            if (currentQuestionIndex < 0) currentQuestionIndex = 0;
+            if (currentQuestionIndex >= quizData.length) currentQuestionIndex = quizData.length - 1;
+            renderQuestion();
+        }
+
+        function confirmSubmit() {
+            playClickSound();
+            attemptCount++;
+            const totalScore = getTotalScore();
+
+            if (totalScore < 10) {
+                hintModeActive = true;
+                document.getElementById('hint-mode-badge').classList.remove('hidden');
+            } else {
+                hintModeActive = false;
+                document.getElementById('hint-mode-badge').classList.add('hidden');
+            }
+
+            showResults(totalScore);
+        }
+
+        function showResults(score) {
+            document.getElementById('screen-quiz').classList.add('hidden');
+            document.getElementById('screen-result').classList.remove('hidden');
+
+            document.getElementById('result-student-name').textContent = `${studentName} (Register #${registerNum})`;
+            document.getElementById('result-score').textContent = score;
+            document.getElementById('result-percentage').textContent = `${(score / 10) * 100}% Marks Achieved`;
+
+            const headline = document.getElementById('result-headline');
+            const subtext = document.getElementById('result-subtext');
+            const badgeIcon = document.getElementById('result-badge-icon');
+            const animalScene = document.getElementById('final-animal-scene');
+
+            playSoundResult(score);
+
+            if (score === 10) {
+                // 10/10 Marks Condition
+                badgeIcon.textContent = "⭐ PERFECTION! ⭐";
+                badgeIcon.className = "text-5xl mb-2 animate-blink-star";
+                headline.textContent = `PERFECT! Incredible work, ${studentName}! 🎉`;
+                headline.className = "text-2xl sm:text-3xl font-extrabold text-ac-darkgreen";
+                subtext.textContent = "You have fully mastered shape construction, contour drawing, and cross-contour drawing!";
+                animalScene.innerHTML = `<span class="animate-dance inline-block">🦊</span> <span class="animate-bounce inline-block">🎉</span> <span class="text-5xl">🏡</span>`;
+
+                if (typeof confetti === 'function') {
+                    confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 } });
+                }
+            } else if (score === 9) {
+                // 9/10 Marks Condition
+                badgeIcon.textContent = "🌟 WOW!";
+                badgeIcon.className = "text-5xl mb-2 animate-bounce";
+                headline.textContent = `WOW! But… that missing 1 mark? 🤔`;
+                headline.className = "text-2xl sm:text-3xl font-extrabold text-amber-700";
+                subtext.textContent = `Almost flawless, ${studentName}! Re-check your answers in Hint Mode to grab that final mark!`;
+                animalScene.innerHTML = `🦊 💭 🏡`;
+            } else if (score >= 1) {
+                // 1 to 8 Marks Condition
+                badgeIcon.innerHTML = `<div class="flex justify-center gap-2"><span class="animate-bounce-quest">❓</span><span class="animate-bounce-quest" style="animation-delay:0.2s">❓</span><span class="animate-bounce-quest" style="animation-delay:0.4s">❓</span></div>`;
+                headline.textContent = `Are you forgetting something, ${studentName}?`;
+                headline.className = "text-2xl sm:text-3xl font-extrabold text-amber-800";
+                subtext.textContent = `You scored ${score} out of 10 marks. Hint Mode is now unlocked to help you review!`;
+                animalScene.innerHTML = `🦊 ❓ 🏡`;
+            } else {
+                // 0 Marks Condition
+                badgeIcon.textContent = "🌱";
+                badgeIcon.className = "text-5xl mb-2";
+                headline.textContent = `Keep Trying, ${studentName}! 🎨`;
+                headline.className = "text-2xl sm:text-3xl font-extrabold text-ac-brown";
+                subtext.textContent = "Don't worry! Every master artist starts with a single sketch. Try again with Hint Mode enabled!";
+                animalScene.innerHTML = `🦊 🌱 🏡`;
+            }
+        }
+
+        function retryQuiz() {
+            playClickSound();
+            studentAnswers = {};
+            currentQuestionIndex = 0;
+            document.getElementById('screen-result').classList.add('hidden');
+            document.getElementById('screen-quiz').classList.remove('hidden');
+            renderQuestion();
+            updateAnimalTrack();
+        }
+
+        function reviewAnswers() {
+            playClickSound();
+            document.getElementById('screen-result').classList.add('hidden');
+            document.getElementById('screen-quiz').classList.remove('hidden');
+            currentQuestionIndex = 0;
+            renderQuestion();
+        }
+    </script>
+</body>
+</html>
